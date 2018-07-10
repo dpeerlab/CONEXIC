@@ -1,15 +1,16 @@
 # CONEXIC
 
-COpy Number and EXpression In Cancer (CONEXIC) is an algorithm that integrates matched copy number (amplifications and deletions) and gene expression data from tumor samples to identify driving mutations and the processes they influence. CONEXIC is inspired by Module Networks (Segal et al, 2003), but has been augmented by a number of critical modifications that make it suitable for identifying drivers. CONEXIC uses a score-guided search to identify the combination of modulators that best explains the behavior of a gene expression module across tumor samples and searches for those with the highest score within the amplified or deleted region.
+**COpy Number and EXpression In Cancer (CONEXIC)** is an algorithm that integrates matched copy number (amplifications and deletions) and gene expression data from tumor samples to identify driving mutations and the processes they influence. CONEXIC is inspired by Module Networks (Segal et al, 2003), but has been augmented by a number of critical modifications that make it suitable for identifying drivers. CONEXIC uses a score-guided search to identify the combination of modulators that best explains the behavior of a gene expression module across tumor samples and searches for those with the highest score within the amplified or deleted region.
 When using CONEXIC, please cite the following article:
 Akavia, U.D.*, Litvin O.*, Kim J., Sanchez-Garcia F., Kotliar D., Causton H.C., Pochanard P., Mozes E, Garraway L.A., Pe'er D. An Integrated Approach to Uncover Drivers of Cancer. Cell 2010; 143:1005-1017
 *Equal Contribution
 This document briefly describes the algorithm, and specifies all parameters available when running it. Despite the fact the algorithm is robust, the exact choice of optimal parameters is complex and requires human interaction. Currently, parameters to CONEXIC are given in a text file (format given below). This program is not plug-and-play, since it requires editing of text files and batch submitting. Please do not use this unless you can perform either task.
 Please check www.c2b2.columbia.edu/danapeerlab/html/software.html for the most updated version of CONEXIC. A tutorial is forthcoming.
  
-SINGLE MODULATOR
+## SINGLE MODULATOR
 Single Modulator clustering is a method for forming initial disjoint clusters of genes, associated 1-1 with a list of regulators, which can be used as the starting point for Module Network Learning. It can be called from within a run of module-network learning, or it can run standalone, creating an output file which can later be used as input to module-network learning.
-Overview of the Single Modulator clustering algorithm
+
+### Overview of the Single Modulator clustering algorithm
 The algorithm works by combining the expression data and copy-number data of the potential regulators. The input copy-number specifies, for each sample, whether the gene is Normal, Amplified or Deleted in this sample. The algorithm accepts a list of regulators for which amplification data should be used, and a list of regulators for which deletion data should be used. (The two lists may overlap if we want to use both amplification and deletion data for some regulators.)
 The steps of the algorithm are as follows:
 A. For each potential regulator on the amplification list, if both expression data and copy-number data are available for it, verify that there are at least two normal samples and at least two amplified samples. Also optionally do a Welch t-test to verify that expression level in the amplified samples is significantly different (either greater or smaller) from expression level in the normal samples.
@@ -22,7 +23,7 @@ correalted with the expression of the regulator, while the "down" cluster contai
 E. For each gene, go over all regression trees created in steps B or C and calculate its score (i.e. the score for a singleton module containing this gene) with each of them. For the regression tree that gives the best score, verify that it gives a better score than the empty regulatory program. Since the program compares to the empty regulatory program, you need to remove the penalty lines. Comparing each single gene to the empty regulatory program with penalties will result in 90% (or more) of the genes failing this test. If a p-value threshold is specified, check the score's p- value by creating a number of random permutations of the regulator's values, calculating the score for each of them, and calculating in how many of them the score is better than in the actual order. If the p-value is below the required threshold, assign the gene to the cluster associated with this regression tree. (If there are "up" and "down" clusters, assign the gene to the "up" cluster if its expression level is positively correlated with that of the regulator, to the "down" cluster if it is negatively correlated.) If the p-value is above the required threshold, try the permutation test for the tree providing the second-best score, and so on until either you find one that passes the p-value test or you've tried all those that are better than the empty regulatory program. If it fails the p-value test for all of them, assign the gene to the no-regulators-found cluster.
 F. At this point every gene has been assigned to some cluster. If the number of members in some of the clusters is less than the MinClusterSize threshold, break up the smallest cluster associated with a regression tree (do not break up the no- regulators-found cluster, even if it is the smallest one) and repeat E for its members to reassign them to other clusters. Repeat until all clusters have at least the required number of members.
 
-Running Single Modulator
+### Running Single Modulator
 Single Modulator clustering is run by executing class conexic.LearnModules (the same class used for module-network learning). A spec file for a standalone run of Single Modulator clustering needs to contain the following:
 - A "score" line specifying the scoring function. The scoring function must be NormalGamma (parameters are described on below).
 - A "data" line specifying the input expression data (parameters are described below).
@@ -37,7 +38,7 @@ Note that in a standalone run of Single Modulator clustering, prior penalty line
 A standalone run of Single Modulator clustering will result in three output files: a step1 output file, listing the clusters and their associated regression trees at the end of step E below; a step2 output file, listing the clusters and their associated regression trees at the end of the entire algorithm (i.e. the end of step F below); and a modules1 output, listing only the clusters without the associated regression trees.
 If you run Single Modulator clustering in the same run as module-network learning, the spec file should be as described below. The step1 and step2 outputs will still be created; the clusters will then be used by the module-network learning algorithm, and the modules1 output will contain the final result of module-network learning. In such a run, the "score=NormalGamma" parameter, described below, should be used, in order to prevent the prior penalties specified for module-network learning from being used during Single Modulator clustering.
  
-Parameters for the algorithm
+**Parameters for the algorithm**
 The "moduleInitiation RegCopyNumberClustering" line in the spec file specifies the following parameters. All parameters are case-insensitive.
 Required parameters:
 amplified_list=<file name> deleted_list=<file name>
@@ -46,14 +47,16 @@ If a regulator appears in both lists, the algorithm will consider both possible 
 The algorithm only looks at the first column of the file, so acceptable files are outputted by JISTIC and are called AMP.genes.All.matrix and DEL.genes.All.matrix.
 AllowSelfRegulation=<true|false>
 This parameter is required unless the ExcludeRegulators parameter is used (see below). The AllowSelfRegulation parameter specifies whether a regulator may be placed in the cluster associated with its own regression tree. If "false" is specified, such self-regulation is prevented. If "true" is specified, self-regulation is allowed and will likely occur for most or even all regulators in the final result of the algorithm.
-Optional parameters:
+ 
+**Optional parameters**:
 input=<list of file names>
 A list of one or more file names, separated by commas, providing copy-numbers for genes whose expression is specified in the input expression data. The relevant copy- number data is for genes that are included in the expression data's list of regulators; copy-number data for other genes is ignored. Columns in the copy-number data files must refer to the same data samples as in the expression data, and in the same order; each line should contain in each column the letter N for normal, A for amplified, or D for deleted. If copy-number data for a regulator appears in more than one of the listed files, the data from the file listed first is used. An acceptable input file for this parameter is outputted by JISTIC, if the tumors parameter was used in the JISTIC run, and this file is called biolearn.gene.matrix.
 The program takes a gene copy number from the first file it appears. If it does not appear in the first file, it looks at the second file and so on. Since default JISTIC is to print out all genes, even if they are normal, you should just use one file, and the suggested file is the output of limitedPeelOff.
 If you've set JISTIC to skip normals, there is value in using multiple files.
   
 This argument is now optional. As an alternative to using this argument, the CNV input may be specified in the "CNVData" argument of the data line in the spec file, as described in the module network section (below); in that case, the data line must also contain a CNVRegulators argument pointing to the amplified-list and deleted- list lines. If step B1 in the algorithm is performed, CNV data must be specified in the data line; otherwise it may be specified in either of these two ways
-CNVRegulators
+
+### CNVRegulators
 This argument specifies that step B1 in the algorithm should be performed; in addition to regression trees based on regulator expression values, regression trees are also created based directly on regulator copy-number status. If the CNVRegulators option is used, CNV data must be specified in the data line in the spec file, using the CNVData argument (as described below), rather than using the input argument in the single-reg specification line.
 first_output=<file name>
 second_output=<file name>
@@ -88,8 +91,8 @@ If you run Single Modulator clustering with the noUpDown parameter, only one clu
 UpDownSplit takes either two or three command-line arguments: the spec file, which should be the same spec file used in the Single Modulator clustering run; the step2 output of the Single Modulator clustering run (the output file containing the final result of the algorithm including regression trees); and optionally the keyword "ClusterOnly". Its output (written to the standard output) is a new set of clusters in which each cluster that was associated with a regression tree is replaced by two separate clusters; members of the original cluster are assigned to one of the two new clusters depending on whether they are positively or negatively correlated with that of the regulator. If the "ClusterOnly" argument was specified, only the clusters are written to the output, without the associated regression trees; otherwise the regression trees are included in the output as well. If the output is intended for use as initial clusters in a subsequent run of module network learning, the "ClusterOnly" argument should be used.
 Note that running Single Modulator clustering with the noUpDown parameter, followed by running UpDownSplit, will often result in different clusters than you would get by running without the noUpDown parameter in the first place. If the number of members in a regulator's cluster is above the MinClusterSize threshold, but the number of each type (positively correlated and negatively correlated) is below the threshold, then when running without noUpDown the two clusters for this regulator will be broken up because they are too small, and so this regression tree will not appear in the final result; if you run with noUpDown and then run UpDownSplit, the result will contain this regression tree and the two clusters for it, with each of these clusters containing a number of members below the threshold. This may lead to very small modules (one gene), which are not necessarily unified and cleaned when running the complete module networks learning algorithm (it depends on the score parameters and penalties).
  
-MODULE NETWORKS
-Summary of the algorithm:
+## MODULE NETWORKS
+### Summary of the algorithm:
 Module network learning is the 3rd step in a run of CONEXIC. Given an initial list of candidate regulators, and a set of initial gene modules, CONEXIC refines the list of regulators and modules using an iterative algorithm to learn the ‘regulatory program’, that specifies the behavior of genes in the module as a function of the expression of its regulators. The output is a module_network file, which characterizes a driver network.
 The driver network divides the regulated genes into modules, and associates each module with a driver tree. Each node in the tree is associated with a driver gene and a threshold expression level, and divides the expression values of the module's members into samples in which the driver gene's expression is below the threshold and those in which the driver gene's expression is above the threshold. Each side of the split can contain further splits using other driver-gene/expression-threshold pairs; we allow a total of up to five splits in each driver tree.
 Starting from the initial clustering provided, we alternately go through iterations of learning a driver tree for each module, and then re-assigning the regulated genes among the modules. Each iteration improves the network's score; the iterations are ended when, during the gene re-assignment step, fewer than 10% of regulated genes have been re-assigned to a different module from their previous one.
@@ -109,7 +112,8 @@ G. When using regression trees, if garbage-module parameters have been specified
 G2. Repeat steps A thru D a specified number of times.
 G3. Learn regulatory programs for the resulting modules.
 H. When using regression trees, if final pruning has been specified, prune the regression trees in the final regulatory programs.
-Running the algorithm:
+
+### Running the algorithm:
 Module network learning is run by executing the java class conexic.LearnModules. The class takes either one or two command-line arguments. The first, required, argument is the spec file, describing the various parameters of the run. The command for running module network learning is:
          java [-Xmx1500] -classpath
 $path2program$/Conexic.jar:$path2program$/commons-math-
