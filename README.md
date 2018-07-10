@@ -5,7 +5,6 @@ When using CONEXIC, please cite the following article:
 Akavia, U.D.*, Litvin O.*, Kim J., Sanchez-Garcia F., Kotliar D., Causton H.C., Pochanard P., Mozes E, Garraway L.A., Pe'er D. An Integrated Approach to Uncover Drivers of Cancer. Cell 2010; 143:1005-1017
 *Equal Contribution
 This document briefly describes the algorithm, and specifies all parameters available when running it. Despite the fact the algorithm is robust, the exact choice of optimal parameters is complex and requires human interaction. Currently, parameters to CONEXIC are given in a text file (format given below). This program is not plug-and-play, since it requires editing of text files and batch submitting. Please do not use this unless you can perform either task.
-Please check www.c2b2.columbia.edu/danapeerlab/html/software.html for the most updated version of CONEXIC. A tutorial is forthcoming.
  
 ## SINGLE MODULATOR
 Single Modulator clustering is a method for forming initial disjoint clusters of genes, associated 1-1 with a list of regulators, which can be used as the starting point for Module Network Learning. It can be called from within a run of module-network learning, or it can run standalone, creating an output file which can later be used as input to module-network learning.
