@@ -1,0 +1,8 @@
+#!/bin/bash
+
+JAVAPATH=/ifs/data/c2b2/dp_lab/shares/programs/jdk1.6.0/bin
+CONEXICPATH=/ifs/data/c2b2/dp_lab/shares/programs/Biolearn
+MATHPATH=$CONEXICPATH
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.TranslateModules ModuleNetwork.spec ModuleNetwork.spec.modules1 > ModuleNetwork.genatomy
+
+ 

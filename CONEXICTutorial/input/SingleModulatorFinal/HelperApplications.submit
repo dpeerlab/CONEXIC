@@ -1,0 +1,19 @@
+#!/bin/sh 
+JAVAPATH=/ifs/data/c2b2/dp_lab/shares/programs/jdk1.6.0/bin
+CONEXICPATH=/ifs/data/c2b2/dp_lab/shares/programs/Biolearn
+MATHPATH=$CONEXICPATH
+
+# Split the modules into Up and Down modules
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.UpDownSplit SingleModulatorFinal.spec SingleModulatorFinal.step2 > SingleModulatorFinal.step2.afterSplit
+
+# Translate resulting files to GENATOMY loadable files
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.TranslateModules SingleModulatorFinal.spec SingleModulatorFinal.step1 > SingleModulatorFinal.step1.genatomy
+
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.TranslateModules SingleModulatorFinal.spec SingleModulatorFinal.step2 > SingleModulatorFinal.step2.genatomy
+
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.TranslateModules SingleModulatorFinal.spec SingleModulatorFinal.step2.afterSplit > SingleModulatorFinal.step2.afterSplit.genatomy
+
+# Translate the regulatory program to Matlab loadable files
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.ExportToMatlab SingleModulatorFinal.spec SingleModulatorFinal.step2 > SingleModulatorFinal_step2.m
+
+$JAVAPATH/java -Xmx1500m -classpath $CONEXICPATH/Conexic.jar:$MATHPATH/commons-math-2.1.jar conexic.ExportToMatlab SingleModulatorFinal.spec SingleModulatorFinal.step2.afterSplit > SingleModulatorFinal_step2_afterSplit.m

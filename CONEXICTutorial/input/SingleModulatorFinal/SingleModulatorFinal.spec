@@ -1,0 +1,4 @@
+score NormalGamma alpha=2 lambda=1 
+data GeneExpressionFile ../../data/TCGA_GBM_Agilent_Exp.txt regulators=../../data/GBMPeakGenesSep10.ALL CNVRegulators=../../data/GBMPeakGenesSep10.AMP,../../data/GBMPeakGenesSep10.DEL CNVData=../../data/biolearn.gene.matrix
+moduleInitiation RegCopyNumberClustering  amplified_list=../../SingleModulatorBoot_Used90Times.Step1.AMP.List deleted_list=../../SingleModulatorBoot_Used90Times.Step1.DEL.List amplified_list_cnv=../../SingleModulatorBoot_Used90Times.Step1.AMP.CNV.List deleted_list_cnv=../../SingleModulatorBoot_Used90Times.Step1.DEL.CNV.List first_output=SingleModulatorFinal.step1  second_output=SingleModulatorFinal.step2  permutations=10000 pvaluethreshold=0.001 WelchTTestthreshold=0.05 AllowSelfRegulation=FALSE MinClusterSize=20 noUpdown 
+ClusterOnly
