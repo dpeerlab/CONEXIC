@@ -1,8 +1,11 @@
 # CONEXIC
 
 **COpy Number and EXpression In Cancer (CONEXIC)** is an algorithm that integrates matched copy number (amplifications and deletions) and gene expression data from tumor samples to identify driving mutations and the processes they influence. CONEXIC is inspired by Module Networks (Segal et al, 2003), but has been augmented by a number of critical modifications that make it suitable for identifying drivers. CONEXIC uses a score-guided search to identify the combination of modulators that best explains the behavior of a gene expression module across tumor samples and searches for those with the highest score within the amplified or deleted region.
+
 When using CONEXIC, please cite the following article:
+
 Akavia, U.D.*, Litvin O.*, Kim J., Sanchez-Garcia F., Kotliar D., Causton H.C., Pochanard P., Mozes E, Garraway L.A., Pe'er D. An Integrated Approach to Uncover Drivers of Cancer. Cell 2010; 143:1005-1017
+
 *Equal Contribution
 This document briefly describes the algorithm, and specifies all parameters available when running it. Despite the fact the algorithm is robust, the exact choice of optimal parameters is complex and requires human interaction. Currently, parameters to CONEXIC are given in a text file (format given below). This program is not plug-and-play, since it requires editing of text files and batch submitting. Please do not use this unless you can perform either task.
  
